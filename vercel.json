@@ -1,0 +1,30 @@
+{
+    "builds": [
+        {
+            "src": "base/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "installCommand": "bash build.sh"
+            }
+        },
+        {
+            "src": "staticfiles/**/*",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/staticfiles/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "base/wsgi.py"
+        }
+    ],
+    "build": {
+        "env": {
+            "DJANGO_SETTINGS_MODULE": "base.settings"
+        }
+    }
+}
