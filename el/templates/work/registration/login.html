@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block content %}
+<h1 class="text-center">Login</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+</form>
+
+<form  method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<form  method="post" action="{% url 'create_customer' %}">
+    {% csrf_token %}
+    <button type="submit">SignIn</button>
+</form>
+
+{% endblock content %}
