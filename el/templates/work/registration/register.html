@@ -12,13 +12,12 @@
 
 {% block content %}
 
-<body>
-    <h2>Login</h2>
+    <a href="{% url 'register' 'user' %}">Реєстрація </a>
+    
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
     </form>
-</body>
 
-{% endblock content%}
+    {% endblock content%}

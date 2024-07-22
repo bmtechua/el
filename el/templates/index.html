@@ -29,7 +29,15 @@
               <a class="nav-link" href="{% url 'home' %}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'create_customer' %}">Create Customer</a>
+                <ul>
+                    {% if request.user.is_authenticated %}
+                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li><a class="nav-link" href="{% url 'register' 'user' %}">Register</a></li>
+                        
+                    {% endif %}
+                </ul>
             </li>
           </ul>
         </div>
@@ -39,6 +47,19 @@
     <div class="container">
         {% block content %}
         <p>Hello, el!</p>
+        {% if request.user.is_authenticated %}
+    <ul>
+        {% if is_admin %}
+            <li><a href="{% url 'admin_view' %}">Admin Dashboard</a></li>
+        {% endif %}
+        {% if is_manager %}
+            <li><a href="{% url 'manager_view' %}">Manager Dashboard</a></li>
+        {% endif %}
+        {% if is_customer %}
+            <li><a href="{% url 'customer_view' %}">Customer Dashboard</a></li>
+        {% endif %}
+    </ul>
+{% endif %}
         {% endblock content %}
       </div>
 
