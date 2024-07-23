@@ -3,8 +3,9 @@ from . import views
 from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.product_list, name='product_list'),
     path('index/', views.index, name='index'),
+    path('home/', views.home, name='home'),
 
     path('register/<str:group_name>/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
@@ -13,7 +14,15 @@ urlpatterns = [
     path('add_product/', views.add_product, name='add_product'),
     path('add_category/', views.add_category, name='add_category'),
     path('add_unit/', views.add_unit, name='add_unit'),
+
     path('change_product/', views.change_product, name='change_product'),
+    path('change_product/<int:product_id>/',
+         views.change_product, name='edit_product'),
+    path('change_product/category/<int:category_id>/',
+         views.change_product, name='edit_category'),
+    path('change_product/unit/<int:unit_id>/',
+         views.change_product, name='edit_unit'),
+
     path('product_list/', views.product_list, name='product_list'),
     path('category_list/', views.category_list, name='category_list'),
     path('unit_list/', views.unit_list, name='unit_list'),

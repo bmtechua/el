@@ -10,33 +10,13 @@ from django.contrib.auth.models import Group
 
 
 def index(request):
-    is_admin = request.user.groups.filter(
-        name='administrator').exists() if request.user.is_authenticated else False
-    is_manager = request.user.groups.filter(
-        name='manager').exists() if request.user.is_authenticated else False
-    is_customer = request.user.groups.filter(
-        name='user').exists() if request.user.is_authenticated else False
-    return redirect('home.html', {
-        'is_admin': is_admin,
-        'is_manager': is_manager,
-        'is_customer': is_customer
-    })
+    return redirect('work/product/product_list.html')
 
 
 def home(request):
     customer = Customer.objects.all()
-    is_admin = request.user.groups.filter(
-        name='administrator').exists() if request.user.is_authenticated else False
-    is_manager = request.user.groups.filter(
-        name='manager').exists() if request.user.is_authenticated else False
-    is_customer = request.user.groups.filter(
-        name='user').exists() if request.user.is_authenticated else False
     context = {
         'customer': customer,
-        'is_admin': is_admin,
-        'is_manager': is_manager,
-        'is_customer': is_customer
-
     }
     return render(request, 'work/home.html', context)
 
