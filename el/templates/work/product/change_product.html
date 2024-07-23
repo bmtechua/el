@@ -15,15 +15,51 @@
 <body>
     <div class="container mt-5">
         <h1>Change Product</h1>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoryModal">
-            Add Category
-        </button>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productModal">
-            Add Product
+            Add/Edit Product
         </button>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unitModal">
-            Add Unit of Measurement
-        </button>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Add/Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <fieldset>
+                            <legend>Product</legend>
+                            <div class="form-group">
+                                <label for="id_name">Name</label>
+                                {{ product_form.name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_price">Price</label>
+                                {{ product_form.price }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_category">Category</label>
+                                {{ product_form.category }}
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#categoryModal">Add Category</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_unit">Unit of Measurement</label>
+                                {{ product_form.unit }}
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#unitModal">Add Unit</button>
+                            </div>
+                            <input type="hidden" name="product_submit" value="1">
+                        </fieldset>
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Category Modal -->
@@ -31,7 +67,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="categoryModalLabel">Edit Category</h5>
+                    <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -48,34 +84,12 @@
         </div>
     </div>
 
-    <!-- Product Modal -->
-    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productModalLabel">Edit Product</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ product_form.as_p }}
-                        <input type="hidden" name="product_submit" value="1">
-                        <button type="submit" class="btn btn-primary">Save Product</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Unit Modal -->
     <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="unitModalLabel">Edit Unit of Measurement</h5>
+                    <h5 class="modal-title" id="unitModalLabel">Add Unit of Measurement</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

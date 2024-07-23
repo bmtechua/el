@@ -172,38 +172,32 @@ def add_unit(request):
 
 
 def change_product(request):
-    if request.method == 'POST':
-        if 'category_submit' in request.POST:
-            category_form = CategoryForm(request.POST)
-            if category_form.is_valid():
-                category_form.save()
-                return redirect('product_list')
-        else:
-            category_form = CategoryForm()
+    category_form = CategoryForm()
+    product_form = ProductForm()
+    unit_form = UnitOfMeasurementForm()
 
+    if request.method == 'POST':
         if 'product_submit' in request.POST:
             product_form = ProductForm(request.POST)
             if product_form.is_valid():
                 product_form.save()
                 return redirect('product_list')
-        else:
-            product_form = ProductForm()
+
+        if 'category_submit' in request.POST:
+            category_form = CategoryForm(request.POST)
+            if category_form.is_valid():
+                category_form.save()
+                return redirect('product_list')
 
         if 'unit_submit' in request.POST:
             unit_form = UnitOfMeasurementForm(request.POST)
             if unit_form.is_valid():
                 unit_form.save()
                 return redirect('product_list')
-        else:
-            unit_form = UnitOfMeasurementForm()
-    else:
-        category_form = CategoryForm()
-        product_form = ProductForm()
-        unit_form = UnitOfMeasurementForm()
 
     context = {
-        'category_form': category_form,
         'product_form': product_form,
+        'category_form': category_form,
         'unit_form': unit_form,
     }
     return render(request, 'work/product/change_product.html', context)
