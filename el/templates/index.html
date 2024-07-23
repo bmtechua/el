@@ -25,9 +25,37 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
+            {% if request.user.is_authenticated %}
+        <ul>
+        {% if is_admin %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}">Home</a>
+                <a class="nav-link" href="{% url 'change_product' %}">Change Product</a>
             </li>
+        {% endif %}
+        {% if is_manager %}
+        <p>Hello, manager!</p>
+        {% endif %}
+        {% if is_customer %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'view_cart' %}">Cart</a>
+            </li>
+        {% endif %}
+        </ul>
+        {% endif %}
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'view_cart' %}">Cart</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'change_product' %}">Change Product</a>
+            </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li><li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li><li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li>
             <li class="nav-item">
                 <ul>
                     {% if request.user.is_authenticated %}
@@ -46,20 +74,7 @@
     
     <div class="container">
         {% block content %}
-        <p>Hello, el!</p>
-        {% if request.user.is_authenticated %}
-    <ul>
-        {% if is_admin %}
-            <li><a href="{% url 'admin_view' %}">Admin Dashboard</a></li>
-        {% endif %}
-        {% if is_manager %}
-            <li><a href="{% url 'manager_view' %}">Manager Dashboard</a></li>
-        {% endif %}
-        {% if is_customer %}
-            <li><a href="{% url 'customer_view' %}">Customer Dashboard</a></li>
-        {% endif %}
-    </ul>
-{% endif %}
+
         {% endblock content %}
       </div>
 

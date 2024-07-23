@@ -1,5 +1,5 @@
 from django import forms
-from .models import Customer
+from .models import Customer, Product, Category, UnitOfMeasurement
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 
@@ -23,3 +23,21 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = ['first_name', 'last_name',
                   'email', 'phone_number', 'address']
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'price', 'category', 'unit']
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+
+
+class UnitOfMeasurementForm(forms.ModelForm):
+    class Meta:
+        model = UnitOfMeasurement
+        fields = ['name', 'abbreviation']
