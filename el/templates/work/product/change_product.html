@@ -11,36 +11,90 @@
 <link rel="stylesheet" type="text/css" href="{% static 'base/styles.css' %}">
 
 {% block content %}
-<title>Change Product</title>
+<title>Product</title>
 <body>
-    <h1>Change Product</h1>
-    <form method="post">
-        {% csrf_token %}
-        <fieldset>
-            <legend>Category</legend>
-            {{ category_form.as_p }}
-            <input type="hidden" name="category_submit" value="1">
-            <button type="submit">Save Category</button>
-        </fieldset>
-    </form>
-    <form method="post">
-        {% csrf_token %}
-        <fieldset>
-            <legend>Product</legend>
-            {{ product_form.as_p }}
-            <input type="hidden" name="product_submit" value="1">
-            <button type="submit">Save Product</button>
-        </fieldset>
-    </form>
-    <form method="post">
-        {% csrf_token %}
-        <fieldset>
-            <legend>Unit of Measurement</legend>
-            {{ unit_form.as_p }}
-            <input type="hidden" name="unit_submit" value="1">
-            <button type="submit">Save Unit</button>
-        </fieldset>
-    </form>
+    <div class="container mt-5">
+        <h1>Change Product</h1>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoryModal">
+            Add Category
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#productModal">
+            Add Product
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unitModal">
+            Add Unit of Measurement
+        </button>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">Edit Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ category_form.as_p }}
+                        <input type="hidden" name="category_submit" value="1">
+                        <button type="submit" class="btn btn-primary">Save Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ product_form.as_p }}
+                        <input type="hidden" name="product_submit" value="1">
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unit Modal -->
+    <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unitModalLabel">Edit Unit of Measurement</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ unit_form.as_p }}
+                        <input type="hidden" name="unit_submit" value="1">
+                        <button type="submit" class="btn btn-primary">Save Unit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 {% endblock content%}
