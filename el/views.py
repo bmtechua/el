@@ -93,7 +93,7 @@ def register_view(request, group_name):
             return redirect('home')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'work/registration/register.html', {'form': form, 'group_name': group_name})
+    return render(request, 'registration/register.html', {'form': form, 'group_name': group_name})
 
 
 def login_view(request):
