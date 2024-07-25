@@ -29,6 +29,10 @@ urlpatterns = [
     path('category_list/', views.category_list, name='category_list'),
     path('unit_list/', views.unit_list, name='unit_list'),
 
+    path('add-to-cart/<int:product_id>/',
+         views.add_to_cart, name='add_to_cart'),
+    path('cart/', views.view_cart, name='view_cart'),
+
     path('add_to_cart/<int:product_id>/',
          views.add_to_cart, name='add_to_cart'),
     path('view_cart/', views.view_cart, name='view_cart'),

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, CartItem, Category, UnitOfMeasurement
+from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart
 from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
@@ -246,7 +246,7 @@ def unit_list(request):
 
 
 @login_required
-def add_to_cart(request, product_id):
+def add_to_cart_old(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart_item, created = CartItem.objects.get_or_create(
         user=request.user, product=product)
@@ -255,12 +255,71 @@ def add_to_cart(request, product_id):
         cart_item.save()
     return redirect('view_cart')
 
+# registered user
+
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    user = request.user
+
+    # Get or create cart for the user
+    cart, created = Cart.objects.get_or_create(user=user)
+
+    # Update or create cart item
+    cart_item, created = CartItem.objects.get_or_create(
+        cart=cart, product=product)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    return redirect('view_cart')
+
+# unregistered user
+
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    # Use session to store cart for unregistered users
+    cart = request.session.get('cart', {})
+
+    if product_id in cart:
+        cart[product_id] += 1
+    else:
+        cart[product_id] = 1
+
+    request.session['cart'] = cart
+
+    return redirect('view_cart')
+
 
 @login_required
-def view_cart(request):
+def view_cart_old(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.total_price() for item in cart_items)
     return render(request, 'work/cart/view_cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+# preview for registered users
+
+
+@login_required
+def view_cart(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    return render(request, 'work/cart/view_cart.html', {'items': items})
+
+# preview for unregistered users
+
+
+def view_cart(request):
+    cart = request.session.get('cart', {})
+    product_ids = list(cart.keys())
+    products = Product.objects.filter(id__in=product_ids)
+
+    items = [{'product': product, 'quantity': cart[str(
+        product.id)]} for product in products]
+
+    return render(request, 'work/cart/view_cart.html', {'items': items})
 
 
 @login_required

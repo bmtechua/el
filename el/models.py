@@ -46,8 +46,15 @@ class Product(models.Model):
         return self.name
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='cart', null=True, blank=True)
+    items = models.ManyToManyField(Product, through='CartItem')
+
+
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
