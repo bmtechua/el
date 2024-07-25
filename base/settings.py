@@ -64,6 +64,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Налаштування для сесій
+# Використовувати базу даних для зберігання сесій
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'  # Ім'я кукі для ідентифікатора сесії
+# Тривалість сесії в секундах (2 тижні за замовчуванням)
+SESSION_COOKIE_AGE = 1209600
+
 ROOT_URLCONF = 'base.urls'
 
 TEMPLATES = [
@@ -77,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'el.context_processors.user_groups',
             ],
         },
     },
@@ -150,3 +158,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGOUT_REDIRECT_URL = '/'

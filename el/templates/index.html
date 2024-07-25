@@ -2,20 +2,17 @@
 <html lang="en">
 
 <head>
-  {% load static %}
-  <!doctype html>
-  <html lang="en">
-  <head>
+    {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Index{% endblock title %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
   </head>
-
+  
   <body>
-
     <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark" data-bs-theme="dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'product_list' %}">El</a>
@@ -26,51 +23,54 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             {% if request.user.is_authenticated %}
-        <ul>
-        {% if is_admin %}
+            <ul>
+              {% if is_admin %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'change_product' %}"><i class="bi bi-gear"></i></a>
+              </li>
+              {% endif %}
+              {% if is_manager %}
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="bi bi-person-badge"></i></a>
+              </li>
+              {% endif %}
+              {% if is_customer %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'view_cart' %}"><i class="bi bi-cart"></i></a>
+              </li>
+              {% endif %}
+            </ul>
+            {% endif %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'change_product' %}">Change Product</a>
+              <a class="nav-link" href="{% url 'view_cart' %}"><i class="bi bi-cart"></i></a>
             </li>
-        {% endif %}
-        {% if is_manager %}
-        <p>Hello, manager!</p>
-        {% endif %}
-        {% if is_customer %}
+  
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'view_cart' %}">Cart</a>
-            </li>
-        {% endif %}
-        </ul>
-        {% endif %}
-            
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'view_cart' %}">Cart</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'change_product' %}">Change Product</a>
-            </li>
-     
-            <li class="nav-item">
-                <ul>
-                    {% if request.user.is_authenticated %}
-                        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li><a class="nav-link" href="{% url 'register' 'user' %}">Register</a></li>
-                        
-                    {% endif %}
-                </ul>
+              <ul>
+                {% if request.user.is_authenticated %}
+                <li>
+                  <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;"><i class="bi bi-box-arrow-right"></i></button>
+                  </form>
+                </li>
+                {% else %}
+                <li><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i></a></li>
+                <li><a class="nav-link" href="{% url 'register' 'user' %}"><i class="bi bi-person-plus"></i></a></li>
+                {% endif %}
+              </ul>
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    
-    <div class="container">
-        {% block content %}
-
-        {% endblock content %}
-      </div>
-
+  
+    {% block content %}
+    {% endblock content %}
+  
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybK8zK6zGyq2tQoFf0a2zGf0FkJ9el9pB4LHp5Z97Y2M8Il0n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+E4OkDJhOj3ErWv5q5Wc5M2E2cpvH" crossorigin="anonymous"></script>
+  
   </body>
+
 </html>

@@ -4,20 +4,60 @@ from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationFor
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    is_admin = request.user.groups.filter(
+        name='administrator').exists() if request.user.is_authenticated else False
+    is_manager = request.user.groups.filter(
+        name='manager').exists() if request.user.is_authenticated else False
+    is_customer = request.user.groups.filter(
+        name='user').exists() if request.user.is_authenticated else False
+
+    context = {
+        'is_admin': is_admin,
+        'is_manager': is_manager,
+        'is_customer': is_customer
+    }
     return redirect('work/product/product_list.html')
 
 
+@login_required
 def home(request):
+    # Отримуємо всі продукти та категорії
     customer = Customer.objects.all()
+    products = Product.objects.all()
+    categories = Category.objects.all()
+
+    # Перевіряємо ролі користувача
+    is_admin = request.user.groups.filter(name='Admin').exists()
+    is_manager = request.user.groups.filter(name='Manager').exists()
+    is_customer = request.user.groups.filter(name='Customer').exists()
+
+    print(f"User: {request.user.username}")
+
+    # Додаємо відлагодження у вигляді виводу на консоль
+    print('is_admin:', is_admin)
+    print('is_manager:', is_manager)
+    print('is_customer:', is_customer)
+    print('is empty')
+
     context = {
         'customer': customer,
+        'products': products,
+        'categories': categories,
+        'is_admin': is_admin,
+        'is_manager': is_manager,
+        'is_customer': is_customer
     }
+
     return render(request, 'work/home.html', context)
 
 
@@ -81,6 +121,10 @@ def login_view(request):
         'is_manager': is_manager,
         'is_customer': is_customer
     })
+
+
+def profile(request):
+    return render(request, 'registration/profile.html')
 
 
 @login_required
