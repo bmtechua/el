@@ -1,0 +1,9 @@
+{# templates/admin/sitevisitcounter_change_list.html #}
+<!-- templates/admin/el/sitevisitcounter_change_list.html -->
+{% extends "admin/change_list.html" %}
+{% block content %}
+    <div>
+        <h2>Загальна кількість відвідувань: {{ cl.result_list.0.visit_count }}</h2>
+    </div>
+    {{ block.super }}
+{% endblock %}

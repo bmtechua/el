@@ -63,3 +63,27 @@ class CartItem(models.Model):
 
     def total_price(self):
         return self.quantity * self.product.price
+
+
+class SiteVisitCounter(models.Model):
+    visit_count = models.PositiveIntegerField(default=0)
+
+    @classmethod
+    def increment(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        obj.visit_count += 1
+        obj.save()
+
+
+class UserVisit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    visit_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.visit_count}'
+
+    @classmethod
+    def increment_visit_count(cls, user):
+        obj, created = cls.objects.get_or_create(user=user)
+        obj.visit_count += 1
+        obj.save()

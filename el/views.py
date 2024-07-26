@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart
+from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, UserVisit, SiteVisitCounter
 from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
@@ -327,3 +327,24 @@ def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     cart_item.delete()
     return redirect('view_cart')
+
+
+# counter global
+def update_global_visit_count():
+    SiteVisitCounter.increment()
+
+# counter local
+
+
+@login_required
+def my_view(request):
+    update_global_visit_count()
+    UserVisit.increment_visit_count(request.user)
+
+    visit_count = UserVisit.objects.get(user=request.user).visit_count
+    global_visit_count = SiteVisitCounter.objects.first().visit_count
+
+    return render(request, 'my_template.html', {
+        'visit_count': visit_count,
+        'global_visit_count': global_visit_count,
+    })
