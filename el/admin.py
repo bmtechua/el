@@ -19,11 +19,12 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(SiteVisitCounter)
 class SiteVisitCounterAdmin(admin.ModelAdmin):
-    list_display = ('user', 'visit_count')
+    list_display = ('visit_count', 'last_visit')
     change_list_template = 'admin/sitevisitcounter/change_list.html'
 
 
 @admin.register(UserVisit)
 class UserVisitAdmin(admin.ModelAdmin):
-    list_display = ('user', 'visit_count')
+    list_display = ('user', 'visit_count', 'timestamp')
+    list_filter = ('timestamp',)
     search_fields = ('user__username',)

@@ -30,7 +30,16 @@ def index(request):
 
 
 @login_required
+def home1(request):
+    SiteVisitCounter.increment()
+    UserVisit.increment_visit_count(request.user)
+    return render(request, 'home.html')
+
+
+@login_required
 def home(request):
+    SiteVisitCounter.increment()
+    UserVisit.increment_visit_count(request.user)
     # Отримуємо всі продукти та категорії
     customer = Customer.objects.all()
     products = Product.objects.all()

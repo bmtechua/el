@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -66,19 +67,23 @@ class CartItem(models.Model):
 
 
 class SiteVisitCounter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     visit_count = models.PositiveIntegerField(default=0)
+    # Додаємо поле для зберігання останнього відвідування
+    last_visit = models.DateTimeField(null=True, blank=True)
 
     @classmethod
     def increment(cls):
         obj, created = cls.objects.get_or_create(pk=1)
         obj.visit_count += 1
+        obj.last_visit = timezone.now()  # Оновлюємо дату та час останнього відвідування
         obj.save()
 
 
 class UserVisit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     visit_count = models.PositiveIntegerField(default=0)
+    timestamp = models.DateTimeField(
+        default=timezone.now)  # Додаємо поле дати та часу
 
     def __str__(self):
         return f'{self.user.username} - {self.visit_count}'
@@ -87,4 +92,5 @@ class UserVisit(models.Model):
     def increment_visit_count(cls, user):
         obj, created = cls.objects.get_or_create(user=user)
         obj.visit_count += 1
+        obj.timestamp = timezone.now()  # Оновлюємо дату та час відвідування
         obj.save()
