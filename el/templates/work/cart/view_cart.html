@@ -12,21 +12,72 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Your Shopping Cart</h2>
+    <h1>Your Shopping Cart</h1>
+
+{% if cart_items %}
     <ul>
         {% for item in cart_items %}
-            <li>{{ item.product.name }} - {{ item.quantity }} x ${{ item.product.price }} = ${{ item.total_price }}
-                <a href="{% url 'remove_from_cart' item.id %}">Remove</a>
+            <li>
+                {{ item.product.name }} 
+                <!-- Додаємо відображення кількості товару -->
+                <span>Quantity: {{ item.quantity }}</span>
+                <!-- Кнопка для відкриття модального вікна -->
+                <button type="button" data-bs-toggle="modal" data-bs-target="#quantityModal" data-item-id="{{ item.id }}" data-current-quantity="{{ item.quantity }}">
+                    Change
+                </button>
+                - ${{ item.product.price }}
+                <span>Total: ${{ item.total_price }}</span>
             </li>
         {% endfor %}
-
-        {% for item in items %}
-        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.product.price }}</li>
-        {% empty %}
-        <li>Your cart is empty.</li>
-        {% endfor %}
     </ul>
-    <h3>Total: ${{ total_price }}</h3>
-    <a href="{% url 'product_list' %}">Continue Shopping</a>
-{% endblock content%}
+    <h3>Total: ${{ total }}</h3>
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+
+<!-- Модальне вікно -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Change Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'update_cart' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="item_id" id="modal_item_id" value="">
+                    <div class="mb-3">
+                        <label for="modal_quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="modal_quantity" name="quantity" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Quantity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var quantityModal = document.getElementById('quantityModal');
+        quantityModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var itemId = button.getAttribute('data-item-id');
+            var currentQuantity = button.getAttribute('data-current-quantity');
+
+            var modalItemIdInput = document.getElementById('modal_item_id');
+            var modalQuantityInput = document.getElementById('modal_quantity');
+
+            modalItemIdInput.value = itemId;
+            modalQuantityInput.value = currentQuantity;
+        });
+    });
+</script>
+
+<a href="{% url 'product_list' %}">Continue Shopping</a>
+{% endblock %}
 

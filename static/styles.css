@@ -79,3 +79,22 @@ button:hover {
     background-color: #0056b3;
     /* Колір фону кнопки при наведенні */
 }
+
+/* Стили для піктограми корзини */
+.bi-cart.empty {
+    color: gray;
+    /* або інший колір для пустої корзини */
+}
+
+.bi-cart.filled {
+    color: red;
+    /* або інший колір для заповненої корзини */
+}
+
+.badge {
+    position: absolute;
+    /* Позиціонування бейджа над піктограмою */
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+}

@@ -6,23 +6,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Index{% endblock title %}</title>
-  
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+     <!-- Bootstrap CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
-
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Popper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+     <!-- Bootstrap Icons -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+ 
+     <!-- Custom CSS -->
+     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
   </head>
   
   <body>
@@ -55,7 +46,12 @@
             </ul>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'view_cart' %}"><i class="bi bi-cart"></i></a>
+              <a class="nav-link" href="{% url 'view_cart' %}">
+                  <i class="bi bi-cart{% if cart_count > 0 %} filled{% else %} empty{% endif %}"></i>
+                  {% if cart_count > 0 %}
+                  <span class="badge bg-danger">{{ cart_count }}</span>
+                  {% endif %}
+              </a>
             </li>
   
             <li class="nav-item">
@@ -81,9 +77,8 @@
     {% block content %}
     {% endblock content %}
   
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybK8zK6zGyq2tQoFf0a2zGf0FkJ9el9pB4LHp5Z97Y2M8Il0n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+E4OkDJhOj3ErWv5q5Wc5M2E2cpvH" crossorigin="anonymous"></script>
-  
+   <!-- Bootstrap Bundle with Popper -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 
 </html>

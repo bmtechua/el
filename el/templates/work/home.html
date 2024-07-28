@@ -26,13 +26,59 @@
    
 
     <h2>Products List</h2>
-        <ul>
-            {% for product in products %}
-                <li>{{ product.name }} - ${{ product.price }}
-                    <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
-                </li>
-            {% endfor %}
-        </ul>
+        <!-- Додаємо список товарів -->
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.name }} - ${{ product.price }}
+            <!-- Кнопка для відкриття модального вікна -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quantityModal" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+                Додати до корзини
+            </button>
+        </li>
+    {% endfor %}
+</ul>
+
+<!-- Модальне вікно для вибору кількості товару -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Вкажіть кількість</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_to_cart' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="product_id" id="product_id" value="">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Кількість</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="submit" class="btn btn-primary">Додати до корзини</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Додаємо скрипт для налаштування модального вікна -->
+<script>
+    var quantityModal = document.getElementById('quantityModal');
+    quantityModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Кнопка, яка відкрила модальне вікно
+        var productId = button.getAttribute('data-product-id');
+        var productName = button.getAttribute('data-product-name');
+        var modalTitle = quantityModal.querySelector('.modal-title');
+        var productIdInput = quantityModal.querySelector('#product_id');
+
+        modalTitle.textContent = 'Вкажіть кількість для ' + productName;
+        productIdInput.value = productId;
+    });
+</script>
     
 
     <div class="container">

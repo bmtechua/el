@@ -237,9 +237,18 @@ def change_product(request):
 
 
 def product_list(request):
+    # Логіка для отримання товарів та іншого контексту
+    cart_count = get_cart_count(request)
+
     products = Product.objects.all()
     categories = Category.objects.all()
-    return render(request, 'work/home.html', {'products': products, 'categories': categories})
+
+    context = {
+        'products': products,
+        'cart_count': cart_count,
+        'categories': categories
+    }
+    return render(request, 'work/home.html', context)
 
 
 def category_list(request):
@@ -267,7 +276,7 @@ def add_to_cart_old(request, product_id):
 # registered user
 
 
-def add_to_cart(request, product_id):
+def add_to_cart_for_reg(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     user = request.user
 
@@ -286,7 +295,7 @@ def add_to_cart(request, product_id):
 # unregistered user
 
 
-def add_to_cart(request, product_id):
+def add_to_cart_for_unreg(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     # Use session to store cart for unregistered users
@@ -300,6 +309,34 @@ def add_to_cart(request, product_id):
     request.session['cart'] = cart
 
     return redirect('view_cart')
+
+
+def add_to_cart(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity', 1))
+
+        product = get_object_or_404(Product, id=product_id)
+        user = request.user
+
+        if user.is_authenticated:
+            # Для зареєстрованих користувачів
+            cart, created = Cart.objects.get_or_create(user=user)
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart, product=product)
+            if not created:
+                cart_item.quantity += quantity
+                cart_item.save()
+        else:
+            # Для незареєстрованих користувачів
+            cart = request.session.get('cart', {})
+            if product_id in cart:
+                cart[product_id] += quantity
+            else:
+                cart[product_id] = quantity
+            request.session['cart'] = cart
+
+        return redirect('view_cart')
 
 
 @login_required
@@ -320,7 +357,7 @@ def view_cart(request):
 # preview for unregistered users
 
 
-def view_cart(request):
+def view_cart_old(request):
     cart = request.session.get('cart', {})
     product_ids = list(cart.keys())
     products = Product.objects.filter(id__in=product_ids)
@@ -329,6 +366,67 @@ def view_cart(request):
         product.id)]} for product in products]
 
     return render(request, 'work/cart/view_cart.html', {'items': items})
+
+
+def view_cart(request):
+    cart_count = 0
+    cart_items = []
+    total = 0
+
+    if request.user.is_authenticated:
+        # Обробка корзини для авторизованих користувачів
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            cart_items = CartItem.objects.filter(cart=cart)
+            cart_count = cart_items.count()
+            total = sum(item.total_price() for item in cart_items)
+        context = {'cart_items': cart_items,
+                   'total': total, 'cart_count': cart_count}
+    else:
+        # Обробка корзини для неавторизованих користувачів
+        cart = request.session.get('cart', {})
+        for product_id, quantity in cart.items():
+            product = get_object_or_404(Product, id=product_id)
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total_price': product.price * quantity,
+            })
+            total += product.price * quantity
+        cart_count = len(cart_items)
+        context = {'cart_items': cart_items,
+                   'total': total, 'cart_count': cart_count}
+
+    return render(request, 'work/cart/view_cart.html', context)
+
+
+def get_cart_count(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            return CartItem.objects.filter(cart=cart).count()
+    else:
+        cart = request.session.get('cart', {})
+        return len(cart)  # Кількість товарів у сесії
+    return 0
+
+
+def update_cart(request):
+    if request.method == 'POST':
+        item_id = request.POST.get('item_id')
+        quantity = int(request.POST.get('quantity'))
+
+        if request.user.is_authenticated:
+            cart_item = get_object_or_404(CartItem, id=item_id)
+            cart_item.quantity = quantity
+            cart_item.save()
+        else:
+            cart = request.session.get('cart', {})
+            if item_id in cart:
+                cart[item_id] = quantity
+                request.session['cart'] = cart
+
+    return redirect('view_cart')
 
 
 @login_required
