@@ -1,0 +1,107 @@
+{% extends 'index.html' %}
+
+{% block title %}Work{% endblock title %}
+{% load static %}
+
+{% block head %}
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+<!-- Custom Styles -->
+<link rel="stylesheet" type="text/css" href="{% static 'base/styles.css' %}">
+{% endblock head %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if request.user.is_authenticated %}
+        {% if is_admin %}
+          <p>admin</p>
+          {% endif %}
+        {% if is_customer %}
+        
+        <a href="{% url 'view_cart' %}">View Cart</a>
+          {% endif %}
+          {% endif %}
+   
+
+    <h2>Products List</h2>
+        <!-- Додаємо список товарів -->
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.name }} - ${{ product.price }}
+            <!-- Кнопка для відкриття модального вікна -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quantityModal" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+                Додати до корзини
+            </button>
+        </li>
+    {% endfor %}
+</ul>
+
+<!-- Модальне вікно для вибору кількості товару -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Вкажіть кількість</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_to_cart' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="product_id" id="product_id" value="">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Кількість</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="submit" class="btn btn-primary">Додати до корзини</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Додаємо скрипт для налаштування модального вікна -->
+<script>
+    var quantityModal = document.getElementById('quantityModal');
+    quantityModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Кнопка, яка відкрила модальне вікно
+        var productId = button.getAttribute('data-product-id');
+        var productName = button.getAttribute('data-product-name');
+        var modalTitle = quantityModal.querySelector('.modal-title');
+        var productIdInput = quantityModal.querySelector('#product_id');
+
+        modalTitle.textContent = 'Вкажіть кількість для ' + productName;
+        productIdInput.value = productId;
+    });
+</script>
+    
+
+    <div class="container">
+        {% if request.user.is_authenticated %}
+            <ul>
+                {% if is_admin %}
+                    <p>Hello, admin!</p>
+                {% endif %}
+                {% if is_manager %}
+                    <p>Hello, manager!</p>
+                {% endif %}
+                {% if is_customer %}
+                    <p>Hello, user!</p>
+                {% endif %}
+                {% else %}
+                <p>Hello, new comer!</p>
+                
+            </ul>
+        {% endif %}
+        <p>++++</p>
+    </div>
+</div>
+
+<!-- Bootstrap JS (optional, for modal functionality) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+E4OkDJhOj3ErWv5q5Wc5M2E2cpvH" crossorigin="anonymous"></script>
+{% endblock content %}

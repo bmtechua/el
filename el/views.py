@@ -30,13 +30,6 @@ def index(request):
 
 
 @login_required
-def home1(request):
-    SiteVisitCounter.increment()
-    UserVisit.increment_visit_count(request.user)
-    return render(request, 'home.html')
-
-
-@login_required
 def home(request):
     SiteVisitCounter.increment()
     UserVisit.increment_visit_count(request.user)
@@ -68,6 +61,21 @@ def home(request):
     }
 
     return render(request, 'work/home.html', context)
+
+
+def work(request):
+   # Логіка для отримання товарів та іншого контексту
+    cart_count = get_cart_count(request)
+
+    products = Product.objects.all()
+    categories = Category.objects.all()
+
+    context = {
+        'products': products,
+        'cart_count': cart_count,
+        'categories': categories
+    }
+    return render(request, 'work/work.html', context)
 
 
 def create_customer(request):
@@ -133,7 +141,7 @@ def login_view(request):
 
 
 def profile(request):
-    return render(request, 'registration/profile.html')
+    return render(request, 'home.html')
 
 
 @login_required
