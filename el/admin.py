@@ -19,8 +19,8 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(SiteVisitCounter)
 class SiteVisitCounterAdmin(admin.ModelAdmin):
-    list_display = ('visit_count',)
-    change_list_template = 'admin/sitevisitcounter_change_list.html'
+    list_display = ('user', 'visit_count')
+    change_list_template = 'admin/sitevisitcounter/change_list.html'
 
 
 @admin.register(UserVisit)

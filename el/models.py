@@ -66,6 +66,7 @@ class CartItem(models.Model):
 
 
 class SiteVisitCounter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     visit_count = models.PositiveIntegerField(default=0)
 
     @classmethod
