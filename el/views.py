@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
-def index(request):
+def index_old(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -27,6 +27,25 @@ def index(request):
         'is_customer': is_customer
     }
     return redirect('work/product/product_list.html')
+
+
+def index(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    is_admin = request.user.groups.filter(
+        name='administrator').exists() if request.user.is_authenticated else False
+    is_manager = request.user.groups.filter(
+        name='manager').exists() if request.user.is_authenticated else False
+    is_customer = request.user.groups.filter(
+        name='user').exists() if request.user.is_authenticated else False
+
+    context = {
+        'is_admin': is_admin,
+        'is_manager': is_manager,
+        'is_customer': is_customer
+    }
+    return redirect('work/work.html')
 
 
 @login_required
@@ -60,7 +79,7 @@ def home(request):
         'is_customer': is_customer
     }
 
-    return render(request, 'work/home.html', context)
+    return render(request, 'work/work.html', context)
 
 
 def work(request):
@@ -256,7 +275,7 @@ def product_list(request):
         'cart_count': cart_count,
         'categories': categories
     }
-    return render(request, 'work/home.html', context)
+    return render(request, 'work/work.html', context)
 
 
 def category_list(request):
