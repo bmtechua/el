@@ -11,29 +11,50 @@
 <link rel="stylesheet" type="text/css" href="{% static 'base/styles.css' %}">
 
 {% block content %}
+{% if cart_items %}
+    <ul>
 <div class="container mt-4">
     <h1>Your Shopping Cart</h1>
 
-{% if cart_items %}
-    <ul>
-        {% for item in cart_items %}
-            <li>
-                {{ item.product.name }} 
-                <!-- Додаємо відображення кількості товару -->
-                <span>Quantity: {{ item.quantity }}</span>
-                <!-- Кнопка для відкриття модального вікна -->
-                <button type="button" data-bs-toggle="modal" data-bs-target="#quantityModal" data-item-id="{{ item.id }}" data-current-quantity="{{ item.quantity }}">
-                    Change
-                </button>
-                - ${{ item.product.price }}
-                <span>Total: ${{ item.total_price }}</span>
-            </li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Од. виміру</th>
+                <th>Ціна, грн.</th>
+                <th>quantity</th>
+                <th>Add/Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td><p>{{ item.product.unit }}</p></td>
+                    <td><p>{{ item.product.price }}</p></td>
+                    <td>{{ item.quantity }}</td>
+                    
+                    <td>
+                        <!-- Кнопка для відкриття модального вікна -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#quantityModal" data-item-id="{{ item.id }}" data-current-quantity="{{ item.quantity }}">
+                            Change
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <h3>Total: ${{ total }}</h3>
-{% else %}
+        <!-- Кнопка для очищення корзини -->
+        <form method="post" action="{% url 'clear_cart' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Clear Cart</button>
+        </form>
+    {% else %}
     <p>Your cart is empty.</p>
-{% endif %}
+    {% endif %}
+    <a href="{% url 'work' %}" class="btn btn-secondary">Continue Shopping</a>
+</ul>
 
 <!-- Модальне вікно -->
 <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
@@ -78,6 +99,6 @@
     });
 </script>
 
-<a href="{% url 'product_list' %}">Continue Shopping</a>
+
 {% endblock %}
 

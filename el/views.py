@@ -365,13 +365,6 @@ def add_to_cart(request):
 
         return redirect('view_cart')
 
-
-@login_required
-def view_cart_old(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    total_price = sum(item.total_price() for item in cart_items)
-    return render(request, 'work/cart/view_cart.html', {'cart_items': cart_items, 'total_price': total_price})
-
 # preview for registered users
 
 
@@ -382,17 +375,6 @@ def view_cart(request):
     return render(request, 'work/cart/view_cart.html', {'items': items})
 
 # preview for unregistered users
-
-
-def view_cart_old(request):
-    cart = request.session.get('cart', {})
-    product_ids = list(cart.keys())
-    products = Product.objects.filter(id__in=product_ids)
-
-    items = [{'product': product, 'quantity': cart[str(
-        product.id)]} for product in products]
-
-    return render(request, 'work/cart/view_cart.html', {'items': items})
 
 
 def view_cart(request):
@@ -460,6 +442,17 @@ def update_cart(request):
 def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     cart_item.delete()
+    return redirect('view_cart')
+
+
+def clear_cart(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            CartItem.objects.filter(cart=cart).delete()
+    else:
+        request.session['cart'] = {}
+
     return redirect('view_cart')
 
 
