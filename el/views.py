@@ -126,7 +126,7 @@ def register_view(request, group_name):
             group = Group.objects.get(name=group_name)
             user.groups.add(group)
             login(request, user)
-            return redirect('home')
+            return redirect('work')
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form, 'group_name': group_name})
@@ -140,7 +140,7 @@ def login_view(request):
                 'username'), password=form.cleaned_data.get('password'))
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('work')
     else:
         form = CustomAuthenticationForm()
 
@@ -166,7 +166,7 @@ def profile(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('work')
 
 
 def group_required(*group_names):
