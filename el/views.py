@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, UserVisit, SiteVisitCounter
-from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm
+from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, Order, OrderItem, UserVisit, SiteVisitCounter
+from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm, OrderForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
@@ -370,9 +370,14 @@ def add_to_cart(request):
 
 @login_required
 def view_cart(request):
+    orders = Order.objects.filter(user=request.user)
+
     cart = get_object_or_404(Cart, user=request.user)
     items = CartItem.objects.filter(cart=cart)
-    return render(request, 'work/cart/view_cart.html', {'items': items})
+    context = {'orders': orders,
+               'items': items
+               }
+    return render(request, 'work/cart/view_cart.html', context)
 
 # preview for unregistered users
 
@@ -404,7 +409,9 @@ def view_cart(request):
             total += product.price * quantity
         cart_count = len(cart_items)
         context = {'cart_items': cart_items,
-                   'total': total, 'cart_count': cart_count}
+                   'total': total,
+                   'cart_count': cart_count
+                   }
 
     return render(request, 'work/cart/view_cart.html', context)
 
@@ -454,6 +461,87 @@ def clear_cart(request):
         request.session['cart'] = {}
 
     return redirect('view_cart')
+
+# checkout
+
+
+@login_required
+def checkout(request):
+    cart = get_object_or_404(Cart, user=request.user)  # Отримання корзини
+    # Отримання всіх товарів в корзині
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+
+            # Зв'язати товар з замовленням
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+            # Очистити корзину
+            cart_items.delete()
+
+            return redirect('order_success')
+    else:
+        form = OrderForm()
+
+    return render(request, 'work/cart/checkout.html', {'form': form, 'cart_items': cart_items})
+
+
+@login_required
+def checkout_old(request):
+    cart = get_object_or_404(Cart, user=request.user)  # Отримання корзини
+    # Отримання всіх товарів в корзині
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    if request.method == 'POST':
+        cart = Cart.objects.filter(user=request.user).first()
+        if not cart:
+            return redirect('work')
+
+        order_form = OrderForm(request.POST)
+        if order_form.is_valid():
+            order = order_form.save(commit=False)
+            order.user = request.user
+            order.save()
+
+            for item in cart.cart_items.all():
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+            # Очистити кошик
+            cart.cart_items.all().delete()
+
+            # Перенаправити на сторінку підтвердження
+            return redirect('work/cart/order_confirmation', order_id=order.id)
+        else:
+            # Якщо форма не є дійсною, відобразіть форму з помилками
+            return render(request, 'work/cart/checkout.html', {'form': order_form})
+
+    # Якщо метод не POST, перенаправляємо на сторінку товарів
+    return redirect('work')
+
+
+def order_confirmation(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'work/cart/order_confirmation.html', {'order': order})
+
+
+def order_success(request):
+    return render(request, 'work/cart/order_success.html')
 
 
 # counter global

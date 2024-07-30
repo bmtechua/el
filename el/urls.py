@@ -44,5 +44,10 @@ urlpatterns = [
          views.remove_from_cart, name='remove_from_cart'),
     path('cart/clear/', views.clear_cart, name='clear_cart'),
 
+    path('cart/checkout/', views.checkout, name='checkout'),
+    path('order/success/', views.order_success, name='order_success'),
+    path('order/confirmation/<int:order_id>/',
+         views.order_confirmation, name='order_confirmation'),
+
     path('create_customer/', views.create_customer, name='create_customer'),
 ]

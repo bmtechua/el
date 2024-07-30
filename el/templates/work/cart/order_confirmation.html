@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block title %}Order Confirmation{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Order Confirmation</h1>
+    <p>Thank you for your order! Here are the details:</p>
+
+    <h3>Order ID: {{ order.id }}</h3>
+    <p>Date: {{ order.created_at }}</p>
+    <p>Total: ${{ order.total }}</p>
+
+    <h4>Customer Details</h4>
+    <p>Name: {{ order.user.get_full_name }}</p>
+    <p>Email: {{ order.user.email }}</p>
+    <p>Phone: {{ order.user.profile.phone_number }}</p> <!-- Якщо у вас є поле телефонного номера в профілі -->
+
+    <h4>Order Items</h4>
+    <ul>
+        {% for item in order.orderitem_set.all %}
+        <li>{{ item.product.name }} - {{ item.quantity }} x ${{ item.price }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

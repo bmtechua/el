@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+
+{% block title %}Order Success{% endblock title %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Дякуємо за ваше замовлення!</h1>
+    <p>Ваше замовлення було успішно оформлено.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-primary">Продовжити покупки</a>
+</div>
+{% endblock %}

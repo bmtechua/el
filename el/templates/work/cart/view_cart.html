@@ -54,6 +54,12 @@
     <p>Your cart is empty.</p>
     {% endif %}
     <a href="{% url 'work' %}" class="btn btn-secondary">Continue Shopping</a>
+
+     <!-- Кнопка для оформлення замовлення -->
+     <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Checkout</button>
+    </form>
 </ul>
 
 <!-- Модальне вікно -->
@@ -81,7 +87,18 @@
         </div>
     </div>
 </div>
-
+<div class="container mt-4">
+    <h1>My Orders</h1>
+    <ul>
+        {% for order in orders %}
+        <li>
+            <a href="{% url 'order_confirmation' order.id %}">Order ID: {{ order.id }} - Total: ${{ order.total }}</a>
+        </li>
+        {% empty %}
+        <li>No orders found.</li>
+        {% endfor %}
+    </ul>
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var quantityModal = document.getElementById('quantityModal');
