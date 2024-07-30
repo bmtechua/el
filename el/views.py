@@ -248,7 +248,7 @@ def product_list(request):
     # Логіка для отримання товарів та іншого контексту
     cart_count = get_cart_count(request)
 
-    products = Product.objects.all()
+    products = Product.objects.select_related('category').all()
     categories = Category.objects.all()
 
     context = {

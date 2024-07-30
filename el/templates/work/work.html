@@ -26,18 +26,38 @@
    
 
     <h2>Products List</h2>
-        <!-- Додаємо список товарів -->
-<ul>
-    {% for product in products %}
-        <li>
-            {{ product.name }} - ${{ product.price }}
-            <!-- Кнопка для відкриття модального вікна -->
+<div class="row">
+    {% for category in categories %}
+    <div class="col">
+        <h3>{{ category.name }}</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Назва</th>
+                            <th>Од. виміру</th>
+                            <th>Ціна, грн.</th>
+                            <th>У корзину</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in category.products.all %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.unit}}</td>
+                                <td>{{ product.price }}</td>
+                                <td>
+                                    <!-- Кнопка для відкриття модального вікна -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quantityModal" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
-                Додати до корзини
+                +
             </button>
-        </li>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+    </div>
     {% endfor %}
-</ul>
+</div>
 
 <!-- Модальне вікно для вибору кількості товару -->
 <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
