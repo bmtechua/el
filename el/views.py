@@ -394,8 +394,13 @@ def view_cart(request):
             cart_items = CartItem.objects.filter(cart=cart)
             cart_count = cart_items.count()
             total = sum(item.total_price() for item in cart_items)
-        context = {'cart_items': cart_items,
-                   'total': total, 'cart_count': cart_count}
+
+        # Отримання замовлень користувача з деталями
+        orders = Order.objects.filter(
+            user=request.user).prefetch_related('items__product')
+
+        context = {'cart_items': cart_items, 'total': total,
+                   'cart_count': cart_count, 'orders': orders}
     else:
         # Обробка корзини для неавторизованих користувачів
         cart = request.session.get('cart', {})
@@ -409,9 +414,7 @@ def view_cart(request):
             total += product.price * quantity
         cart_count = len(cart_items)
         context = {'cart_items': cart_items,
-                   'total': total,
-                   'cart_count': cart_count
-                   }
+                   'total': total, 'cart_count': cart_count}
 
     return render(request, 'work/cart/view_cart.html', context)
 
@@ -443,6 +446,61 @@ def update_cart(request):
                 request.session['cart'] = cart
 
     return redirect('view_cart')
+
+
+@login_required
+def checkout(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    customer = None
+    try:
+        customer = Customer.objects.get(user=request.user)
+    except Customer.DoesNotExist:
+        pass
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            use_existing_data = form.cleaned_data.pop('use_existing_data')
+            if use_existing_data and customer:
+                order = Order.objects.create(
+                    user=request.user,
+                    first_name=customer.first_name,
+                    last_name=customer.last_name,
+                    email=customer.email,
+                    phone_number=customer.phone_number,
+                    address=customer.address
+                )
+            else:
+                order = form.save(commit=False)
+                order.user = request.user
+                order.save()
+
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+            cart_items.delete()
+
+            return redirect('order_success')
+    else:
+        initial_data = {}
+        if customer:
+            initial_data = {
+                'first_name': customer.first_name,
+                'last_name': customer.last_name,
+                'email': customer.email,
+                'phone_number': customer.phone_number,
+                'address': customer.address
+            }
+        form = OrderForm(initial=initial_data)
+
+    return render(request, 'work/cart/checkout.html', {'form': form, 'cart_items': cart_items})
 
 
 @login_required
@@ -495,44 +553,6 @@ def checkout(request):
         form = OrderForm()
 
     return render(request, 'work/cart/checkout.html', {'form': form, 'cart_items': cart_items})
-
-
-@login_required
-def checkout_old(request):
-    cart = get_object_or_404(Cart, user=request.user)  # Отримання корзини
-    # Отримання всіх товарів в корзині
-    cart_items = CartItem.objects.filter(cart=cart)
-
-    if request.method == 'POST':
-        cart = Cart.objects.filter(user=request.user).first()
-        if not cart:
-            return redirect('work')
-
-        order_form = OrderForm(request.POST)
-        if order_form.is_valid():
-            order = order_form.save(commit=False)
-            order.user = request.user
-            order.save()
-
-            for item in cart.cart_items.all():
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.product.price
-                )
-
-            # Очистити кошик
-            cart.cart_items.all().delete()
-
-            # Перенаправити на сторінку підтвердження
-            return redirect('work/cart/order_confirmation', order_id=order.id)
-        else:
-            # Якщо форма не є дійсною, відобразіть форму з помилками
-            return render(request, 'work/cart/checkout.html', {'form': order_form})
-
-    # Якщо метод не POST, перенаправляємо на сторінку товарів
-    return redirect('work')
 
 
 def order_confirmation(request, order_id):

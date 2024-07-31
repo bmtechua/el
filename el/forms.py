@@ -46,4 +46,5 @@ class UnitOfMeasurementForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['customer']
+        fields = ['first_name', 'last_name',
+                  'email', 'phone_number', 'address']

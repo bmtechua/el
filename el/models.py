@@ -66,13 +66,23 @@ class CartItem(models.Model):
         return self.quantity * self.product.price
 
 
-class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+class Order_old(models.Model):
+    # customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    first_name = models.CharField(max_length=50, default='Не вказано')
+    last_name = models.CharField(max_length=50, default='Не вказано')
+    email = models.EmailField(default='Не вказано')
+    phone_number = models.CharField(max_length=15, default='Не вказано')
+    address = models.CharField(max_length=255, default='Не вказано')
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return f'Order #{self.id} by {self.customer.first_name} {self.customer.last_name}'
+        return f'Order #{self.id} by {self.user.username}'
 
 
 class OrderItem(models.Model):
