@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, Order, OrderItem, UserVisit, SiteVisitCounter
-from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm, OrderForm
+from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, Order, OrderItem, UserVisit, SiteVisitCounter, Work
+from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm, OrderForm, OrderStatusForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
@@ -8,25 +8,6 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
-
-
-def index_old(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    is_admin = request.user.groups.filter(
-        name='administrator').exists() if request.user.is_authenticated else False
-    is_manager = request.user.groups.filter(
-        name='manager').exists() if request.user.is_authenticated else False
-    is_customer = request.user.groups.filter(
-        name='user').exists() if request.user.is_authenticated else False
-
-    context = {
-        'is_admin': is_admin,
-        'is_manager': is_manager,
-        'is_customer': is_customer
-    }
-    return redirect('work/product/product_list.html')
 
 
 def index(request):
@@ -289,17 +270,6 @@ def unit_list(request):
 
 # cart
 
-
-@login_required
-def add_to_cart_old(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    cart_item, created = CartItem.objects.get_or_create(
-        user=request.user, product=product)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-    return redirect('view_cart')
-
 # registered user
 
 
@@ -370,12 +340,18 @@ def add_to_cart(request):
 
 @login_required
 def view_cart(request):
+
     orders = Order.objects.filter(user=request.user)
+
+    # Перевірка, чи є користувач менеджером або адміністратором
+    is_manager_or_admin = request.user.groups.filter(
+        name__in=['manager', 'administrator']).exists()
 
     cart = get_object_or_404(Cart, user=request.user)
     items = CartItem.objects.filter(cart=cart)
     context = {'orders': orders,
-               'items': items
+               'items': items,
+               'is_manager_or_admin': is_manager_or_admin,
                }
     return render(request, 'work/cart/view_cart.html', context)
 
@@ -583,3 +559,64 @@ def my_view(request):
         'visit_count': visit_count,
         'global_visit_count': global_visit_count,
     })
+
+
+def is_administrator(user):
+    return user.groups.filter(name='administrator').exists()
+
+
+def is_manager(user):
+    return user.groups.filter(name__in=['manager', 'administrator']).exists()
+
+
+@login_required
+@user_passes_test(is_administrator)
+def admin_cabinet(request):
+    return render(request, 'work/admin_cabinet.html')
+
+
+@login_required
+@user_passes_test(is_manager)
+def manager_cabinet(request):
+    return render(request, 'work/manager_cabinet.html')
+
+
+@login_required
+def user_cabinet(request):
+    if request.user.groups.filter(name='user').exists():
+        return render(request, 'work/user_cabinet.html')
+    return redirect('login')
+
+
+def some_view(request):
+    is_admin = request.user.groups.filter(name='administrator').exists()
+    is_manager = request.user.groups.filter(name='manager').exists()
+    is_user = request.user.groups.filter(name='user').exists()
+
+    context = {
+        'is_admin': is_admin,
+        'is_manager': is_manager,
+        'is_user': is_user,
+        # Додайте інші змінні, які вам потрібні
+    }
+
+    return render(request, 'index.html', context)
+
+
+@login_required
+@user_passes_test(is_manager)
+def update_order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('order_confirmation', order_id=order.id)
+    else:
+        form = OrderStatusForm(instance=order)
+    return render(request, 'update_order_status.html', {'form': form, 'order': order})
+
+
+def our_works(request):
+    works = Work.objects.all()
+    return render(request, 'work/our_works.html', {'works': works})

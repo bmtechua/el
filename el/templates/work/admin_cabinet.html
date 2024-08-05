@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block title %}Адмін Кабінет{% endblock title %}
+{% block content %}
+<h1>Адмін Кабінет</h1>
+<p>Вітаємо, адміністраторе!</p>
+<a href="{% url 'view_cart' %}">Перегляд корзини</a>
+<a href="{% url 'product_list' %}">Управління товарами</a>
+
+<a href="{% url 'change_product' %}">change_product</a>
+<a href="{% url 'order_success' %}">Управління замовленнями</a>
+{% endblock %}

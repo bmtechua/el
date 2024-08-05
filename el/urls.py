@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # path('', views.home, name='home'),
@@ -44,10 +46,18 @@ urlpatterns = [
          views.remove_from_cart, name='remove_from_cart'),
     path('cart/clear/', views.clear_cart, name='clear_cart'),
 
+    path('order/<int:order_id>/update_status/',
+         views.update_order_status, name='update_order_status'),
     path('cart/checkout/', views.checkout, name='checkout'),
     path('order/success/', views.order_success, name='order_success'),
     path('order/confirmation/<int:order_id>/',
-         views.order_confirmation, name='order_confirmation'),
+         views.order_confirmation, name='order_confirmation'), path('order/<int:order_id>/update_status/', views.update_order_status, name='update_order_status'),
 
     path('create_customer/', views.create_customer, name='create_customer'),
-]
+
+    path('admin_cabinet/', views.admin_cabinet, name='admin_cabinet'),
+    path('manager_cabinet/', views.manager_cabinet, name='manager_cabinet'),
+    path('user_cabinet/', views.user_cabinet, name='user_cabinet'),
+
+    path('our-works/', views.our_works, name='our_works'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

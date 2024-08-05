@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% block title %}Кабінет Користувача{% endblock title %}
+{% block content %}
+<h1>Кабінет Користувача</h1>
+<p>Вітаємо, користуваче!</p>
+<a href="{% url 'view_cart' %}">Перегляд корзини</a>
+<a href="{% url 'user_orders' %}">Мої замовлення</a>
+{% endblock %}

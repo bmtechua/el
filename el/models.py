@@ -73,6 +73,13 @@ class Order_old(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('archived', 'Archived'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     first_name = models.CharField(max_length=50, default='Не вказано')
     last_name = models.CharField(max_length=50, default='Не вказано')
@@ -80,6 +87,10 @@ class Order(models.Model):
     phone_number = models.CharField(max_length=15, default='Не вказано')
     address = models.CharField(max_length=255, default='Не вказано')
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default='pending')
+    executor = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='executed_orders')
 
     def __str__(self):
         return f'Order #{self.id} by {self.user.username}'
@@ -127,3 +138,12 @@ class UserVisit(models.Model):
         obj.visit_count += 1
         obj.timestamp = timezone.now()  # Оновлюємо дату та час відвідування
         obj.save()
+
+
+class Work(models.Model):
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='works/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

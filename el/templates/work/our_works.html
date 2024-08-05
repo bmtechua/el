@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+
+{% block title %}Наші роботи{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Наші роботи</h1>
+    <div class="row">
+        {% for work in works %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="{{ work.image.url }}" class="card-img-top" alt="{{ work.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ work.title }}</h5>
+                        <p class="card-text">{{ work.description }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -48,3 +48,13 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['first_name', 'last_name',
                   'email', 'phone_number', 'address']
+
+
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status', 'executor']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'executor': forms.Select(attrs={'class': 'form-control'}),
+        }
