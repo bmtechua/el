@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+{% block content %}
+  <h2>Всі замовлення</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Клієнт</th>
+        <th>Дата створення</th>
+        <th>Статус</th>
+        <th>Деталі</th>
+        <th>Редагувати статус</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.customer }}</td>
+          <td>{{ order.created_at }}</td>
+          <td>{{ order.status }}</td>
+          <td><a href="{% url 'order_detail' order.id %}">Переглянути</a></td>
+          <td><a href="{% url 'edit_order_status' order.id %}">Редагувати статус</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

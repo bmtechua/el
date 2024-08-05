@@ -57,6 +57,11 @@ urlpatterns = [
 
     path('admin_cabinet/', views.admin_cabinet, name='admin_cabinet'),
     path('manager_cabinet/', views.manager_cabinet, name='manager_cabinet'),
+    path('manager/orders/', views.manager_orders, name='manager_orders'),
+    path('manager/orders/<int:order_id>/',
+         views.order_detail, name='order_detail'),
+    path('manager/orders/<int:order_id>/edit/',
+         views.edit_order_status, name='edit_order_status'),
     path('user_cabinet/', views.user_cabinet, name='user_cabinet'),
 
     path('our-works/', views.our_works, name='our_works'),

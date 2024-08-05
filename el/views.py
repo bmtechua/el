@@ -570,6 +570,13 @@ def is_manager(user):
 
 
 @login_required
+@user_passes_test(is_manager)
+def manager_orders(request):
+    orders = Order.objects.all()  # Отримати всі замовлення
+    return render(request, 'work/manager_orders.html', {'orders': orders})
+
+
+@login_required
 @user_passes_test(is_administrator)
 def admin_cabinet(request):
     return render(request, 'work/admin_cabinet.html')
@@ -615,6 +622,27 @@ def update_order_status(request, order_id):
     else:
         form = OrderStatusForm(instance=order)
     return render(request, 'update_order_status.html', {'form': form, 'order': order})
+
+
+@login_required
+@user_passes_test(is_manager)
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'work/cart/order_detail.html', {'order': order})
+
+
+@login_required
+@user_passes_test(is_manager)
+def edit_order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('manager_orders')
+    else:
+        form = OrderStatusForm(instance=order)
+    return render(request, 'work/cart/edit_order_status.html', {'form': form, 'order': order})
 
 
 def our_works(request):

@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <h2>Деталі замовлення #{{ order.id }}</h2>
+  <p>Клієнт: {{ order.customer }}</p>
+  <p>Дата створення: {{ order.created_at }}</p>
+  <p>Статус: {{ order.status }}</p>
+  <p>Деталі:</p>
+  <ul>
+    {% for item in order.items.all %}
+      <li>{{ item.product }} - {{ item.quantity }} шт.</li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'manager_orders' %}">Назад до списку замовлень</a>
+{% endblock %}
