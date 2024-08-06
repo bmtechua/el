@@ -108,7 +108,6 @@
                         </li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'order_confirmation' order.id %}">Переглянути деталі замовлення</a>
                 {% if is_manager_or_admin %}
                     <a href="{% url 'update_order_status' order.id %}" class="btn btn-warning mt-2">Update Status</a>
                 {% endif %}

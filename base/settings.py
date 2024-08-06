@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'el.middleware.XFrameOptionsMiddleware',
 ]
 
 # Налаштування для сесій
@@ -159,6 +160,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = '/accounts/login/'
+# LOGIN_REDIRECT_URL = '/user/orders/'
 LOGIN_REDIRECT_URL = '/work/'
 LOGOUT_REDIRECT_URL = '/'
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Customer, Product, CartItem, Category, UnitOfMeasurement, Cart, Order, OrderItem, UserVisit, SiteVisitCounter, Work
-from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm, OrderForm, OrderStatusForm
+from .forms import CustomerForm, CustomUserCreationForm, CustomAuthenticationForm, ProductForm, CategoryForm, UnitOfMeasurementForm, WorkForm, OrderForm, OrderStatusForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
@@ -349,9 +349,12 @@ def view_cart(request):
 
     cart = get_object_or_404(Cart, user=request.user)
     items = CartItem.objects.filter(cart=cart)
+    total = sum(item.product.price * item.quantity for item in items)
+
     context = {'orders': orders,
                'items': items,
                'is_manager_or_admin': is_manager_or_admin,
+               'total': total,
                }
     return render(request, 'work/cart/view_cart.html', context)
 
@@ -540,6 +543,14 @@ def order_success(request):
     return render(request, 'work/cart/order_success.html')
 
 
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    context = {
+        'order': order,
+    }
+    return render(request, 'work/order_detail.html', context)
+
+
 # counter global
 def update_global_visit_count():
     SiteVisitCounter.increment()
@@ -627,7 +638,7 @@ def update_order_status(request, order_id):
 @login_required
 @user_passes_test(is_manager)
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+    order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'work/cart/order_detail.html', {'order': order})
 
 
@@ -648,3 +659,36 @@ def edit_order_status(request, order_id):
 def our_works(request):
     works = Work.objects.all()
     return render(request, 'work/our_works.html', {'works': works})
+
+
+def admin_cabinet(request):
+    product_form = ProductForm()
+    category_form = CategoryForm()
+    unit_form = UnitOfMeasurementForm()
+    work_form = WorkForm()
+
+    if request.method == 'POST':
+        if 'product_submit' in request.POST:
+            product_form = ProductForm(request.POST)
+            if product_form.is_valid():
+                product_form.save()
+        elif 'category_submit' in request.POST:
+            category_form = CategoryForm(request.POST)
+            if category_form.is_valid():
+                category_form.save()
+        elif 'unit_submit' in request.POST:
+            unit_form = UnitOfMeasurementForm(request.POST)
+            if unit_form.is_valid():
+                unit_form.save()
+        elif 'work_submit' in request.POST:
+            work_form = WorkForm(request.POST, request.FILES)
+            if work_form.is_valid():
+                work_form.save()
+
+    context = {
+        'product_form': product_form,
+        'category_form': category_form,
+        'unit_form': unit_form,
+        'work_form': work_form,
+    }
+    return render(request, 'work/admin_cabinet.html', context)

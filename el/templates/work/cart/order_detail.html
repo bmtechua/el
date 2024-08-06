@@ -6,6 +6,7 @@
   <p>Дата створення: {{ order.created_at }}</p>
   <p>Статус: {{ order.status }}</p>
   <p>Деталі:</p>
+  
   <ul>
     {% for item in order.items.all %}
       <li>{{ item.product }} - {{ item.quantity }} шт.</li>

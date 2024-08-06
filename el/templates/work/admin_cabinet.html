@@ -1,11 +1,136 @@
 {% extends 'index.html' %}
-{% block title %}Адмін Кабінет{% endblock title %}
+
+{% block title %}Admin Cabinet{% endblock title %}
+
+{% load static %}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+<!-- Custom Styles -->
+<link rel="stylesheet" type="text/css" href="{% static 'base/styles.css' %}">
+
 {% block content %}
 <h1>Адмін Кабінет</h1>
 <p>Вітаємо, адміністраторе!</p>
-<a href="{% url 'view_cart' %}">Перегляд корзини</a>
-<a href="{% url 'product_list' %}">Управління товарами</a>
 
-<a href="{% url 'change_product' %}">change_product</a>
-<a href="{% url 'order_success' %}">Управління замовленнями</a>
+<!-- Кнопка для списку послуг -->
+<button class="btn btn-primary" onclick="window.location.href='{% url 'product_list' %}'">Список послуг</button>
+
+<!-- Кнопка для додавання послуги -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+    Додати послугу
+</button>
+
+<!-- Кнопка для додавання роботи -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#workModal">
+    Додати роботу
+</button>
+
+<!-- Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Додати послугу</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Послуга</legend>
+                        <div class="form-group mb-3">
+                            <label for="id_name">Назва</label>
+                            {{ product_form.name }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_price">Ціна</label>
+                            {{ product_form.price }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_category">Категорія</label>
+                            {{ product_form.category }}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">Додати категорію</button>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_unit">Одиниця вимірювання</label>
+                            {{ product_form.unit }}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#unitModal">Додати одиницю</button>
+                        </div>
+                        <input type="hidden" name="product_submit" value="1">
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary">Зберегти послугу</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Work Modal -->
+<div class="modal fade" id="workModal" tabindex="-1" aria-labelledby="workModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="workModalLabel">Додати роботу</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ work_form.as_p }}
+                    <input type="hidden" name="work_submit" value="1">
+                    <button type="submit" class="btn btn-primary">Зберегти роботу</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalLabel">Додати категорію</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ category_form.as_p }}
+                    <input type="hidden" name="category_submit" value="1">
+                    <button type="submit" class="btn btn-primary">Зберегти категорію</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Unit Modal -->
+<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unitModalLabel">Додати одиницю вимірювання</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ unit_form.as_p }}
+                    <input type="hidden" name="unit_submit" value="1">
+                    <button type="submit" class="btn btn-primary">Зберегти одиницю</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+5GQ3I5w5asfa/6Xl5zz5t9M2gK3y"
+        crossorigin="anonymous"></script>
+
 {% endblock %}

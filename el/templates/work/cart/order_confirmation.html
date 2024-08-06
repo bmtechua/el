@@ -14,7 +14,7 @@
     <h4>Customer Details</h4>
     <p>Name: {{ order.user.get_full_name }}</p>
     <p>Email: {{ order.user.email }}</p>
-    <p>Phone: {{ order.user.profile.phone_number }}</p> <!-- Якщо у вас є поле телефонного номера в профілі -->
+    <p>Phone: {{ order.user.profile.phone_number }}</p> <!-- Переконайтеся, що поле телефонного номера є в профілі -->
 
     <h4>Order Items</h4>
     <ul>

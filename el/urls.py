@@ -22,12 +22,12 @@ urlpatterns = [
     path('add_unit/', views.add_unit, name='add_unit'),
 
     path('change_product/', views.change_product, name='change_product'),
-    path('change_product/<int:product_id>/',
-         views.change_product, name='edit_product'),
-    path('change_product/category/<int:category_id>/',
-         views.change_product, name='edit_category'),
-    path('change_product/unit/<int:unit_id>/',
-         views.change_product, name='edit_unit'),
+    # path('change_product/<int:product_id>/',
+    # views.change_product, name='edit_product'),
+    # path('change_product/category/<int:category_id>/',
+    # views.change_product, name='edit_category'),
+    # path('change_product/unit/<int:unit_id>/',
+    # views.change_product, name='edit_unit'),
 
     path('product_list/', views.product_list, name='product_list'),
     path('category_list/', views.category_list, name='category_list'),
@@ -51,18 +51,21 @@ urlpatterns = [
     path('cart/checkout/', views.checkout, name='checkout'),
     path('order/success/', views.order_success, name='order_success'),
     path('order/confirmation/<int:order_id>/',
-         views.order_confirmation, name='order_confirmation'), path('order/<int:order_id>/update_status/', views.update_order_status, name='update_order_status'),
+         views.order_confirmation, name='order_confirmation'),
+    path('order/<int:order_id>/update_status/',
+         views.update_order_status, name='update_order_status'),
 
     path('create_customer/', views.create_customer, name='create_customer'),
 
     path('admin_cabinet/', views.admin_cabinet, name='admin_cabinet'),
     path('manager_cabinet/', views.manager_cabinet, name='manager_cabinet'),
     path('manager/orders/', views.manager_orders, name='manager_orders'),
-    path('manager/orders/<int:order_id>/',
-         views.order_detail, name='order_detail'),
+    # path('manager/orders/<int:order_id>/',
+    # views.order_detail, name='order_detail'),
     path('manager/orders/<int:order_id>/edit/',
          views.edit_order_status, name='edit_order_status'),
     path('user_cabinet/', views.user_cabinet, name='user_cabinet'),
+    path('user/orders/<int:order_id>/', views.order_detail, name='order_detail'),
 
     path('our-works/', views.our_works, name='our_works'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
