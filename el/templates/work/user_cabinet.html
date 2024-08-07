@@ -1,8 +1,138 @@
 {% extends 'index.html' %}
 {% block title %}Кабінет Користувача{% endblock title %}
+{% load static %}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+<!-- Custom Styles -->
+<link rel="stylesheet" type="text/css" href="{% static 'base/styles.css' %}">
+
 {% block content %}
-<h1>Кабінет Користувача</h1>
-<p>Вітаємо, користуваче!</p>
-<a href="{% url 'view_cart' %}">Перегляд корзини</a>
+        <h1>Кабінет {{user}}</h1>
+{% if cart_items %}
+    <div class="container mt-4">
+        
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Назва</th>
+                    <th>Од. виміру</th>
+                    <th>Ціна, грн.</th>
+                    <th>Кількість</th>
+                    <th>Додати/Видалити</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.unit }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>
+                            <!-- Кнопка для відкриття модального вікна -->
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#quantityModal" data-item-id="{{ item.id }}" data-current-quantity="{{ item.quantity }}">
+                                Змінити
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h3>Загальна сума: {{ total }} грн</h3>
+
+        <!-- Кнопка для очищення корзини -->
+        <form method="post" action="{% url 'clear_cart' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Очистити корзину</button>
+        </form>
+    {% else %}
+        <p> Корзина {{user}} порожня.</p>
+    {% endif %}
+
+    <a href="{% url 'work' %}" class="btn btn-secondary">Продовжити покупки</a>
+
+    <!-- Кнопка для оформлення замовлення -->
+    <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Оформити замовлення</button>
+    </form>
+</div>
+
+<!-- Модальне вікно -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Змінити кількість</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'update_cart' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="item_id" id="modal_item_id" value="">
+                    <div class="mb-3">
+                        <label for="modal_quantity" class="form-label">Кількість</label>
+                        <input type="number" class="form-control" id="modal_quantity" name="quantity" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Відображення замовлень -->
+<div class="container mt-4">
+    <h1>Мої замовлення</h1>
+    <ul>
+        {% for order in orders %}
+            <li>
+                <h3>Замовлення ID: {{ order.id }}</h3>
+                <p>Дата замовлення: {{ order.created_at }}</p>
+                <p>Загальна сума: {{ order.total }} грн</p>
+                <p>Статус: {{ order.get_status_display }}</p>
+                {% if order.executor %}
+                    <p>Виконавець: {{ order.executor.get_full_name }}</p>
+                {% endif %}
+                <ul>
+                    {% for item in order.items.all %}
+                        <li>
+                            {{ item.product.name }} - {{ item.quantity }} x {{ item.price }} грн = {{ item.total_price }} грн
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if is_manager_or_admin %}
+                    <a href="{% url 'update_order_status' order.id %}" class="btn btn-warning mt-2">Update Status</a>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>Немає замовлень.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var quantityModal = document.getElementById('quantityModal');
+        quantityModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var itemId = button.getAttribute('data-item-id');
+            var currentQuantity = button.getAttribute('data-current-quantity');
+
+            var modalItemIdInput = document.getElementById('modal_item_id');
+            var modalQuantityInput = document.getElementById('modal_quantity');
+
+            modalItemIdInput.value = itemId;
+            modalQuantityInput.value = currentQuantity;
+        });
+    });
+</script>
 
 {% endblock %}

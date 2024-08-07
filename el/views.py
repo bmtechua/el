@@ -599,13 +599,6 @@ def manager_cabinet(request):
     return render(request, 'work/manager_cabinet.html')
 
 
-@login_required
-def user_cabinet(request):
-    if request.user.groups.filter(name='user').exists():
-        return render(request, 'work/user_cabinet.html')
-    return redirect('login')
-
-
 def some_view(request):
     is_admin = request.user.groups.filter(name='administrator').exists()
     is_manager = request.user.groups.filter(name='manager').exists()
@@ -692,3 +685,32 @@ def admin_cabinet(request):
         'work_form': work_form,
     }
     return render(request, 'work/admin_cabinet.html', context)
+
+
+@login_required
+def user_cabinet_old(request):
+    if request.user.groups.filter(name='user').exists():
+        return render(request, 'work/user_cabinet.html')
+    return redirect('login')
+
+
+@login_required
+def user_cabinet(request):
+    if request.user.groups.filter(name='user').exists():
+        orders = Order.objects.filter(user=request.user)
+
+    # Перевірка, чи є користувач менеджером або адміністратором
+        is_manager_or_admin = request.user.groups.filter(
+            name__in=['manager', 'administrator']).exists()
+
+        cart = get_object_or_404(Cart, user=request.user)
+        items = CartItem.objects.filter(cart=cart)
+        total = sum(item.product.price * item.quantity for item in items)
+
+        context = {'orders': orders,
+                   'items': items,
+                   'is_manager_or_admin': is_manager_or_admin,
+                   'total': total,
+                   }
+        return render(request, 'work/user_cabinet.html', context)
+    return redirect('login')

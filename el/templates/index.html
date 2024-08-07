@@ -27,44 +27,44 @@
                     {% if user.is_authenticated %}
                         {% if is_admin %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'admin_cabinet' %}">Admin Cabinet</a>
+                                <a class="nav-link" href="{% url 'admin_cabinet' %}">{{user}}</a>
                             </li>
                             <li class="nav-item">
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                        <i class="bi bi-box-arrow-right"></i>
                                     </button>
                                 </form>
                             </li>
                         {% elif is_manager %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'manager_cabinet' %}">Manager Cabinet</a>
+                                <a class="nav-link" href="{% url 'manager_cabinet' %}">{{user}}</a>
                             </li>
                             <li class="nav-item">
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                        <i class="bi bi-box-arrow-right"></i> 
                                     </button>
                                 </form>
                             </li>
                         {% elif is_customer %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'user_cabinet' %}">User Cabinet</a>
+                                <a class="nav-link" href="{% url 'user_cabinet' %}">{{user}}</a>
                             </li>
                             <li class="nav-item">
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                        <i class="bi bi-box-arrow-right"></i>
                                     </button>
                                 </form>
                             </li>
                         {% endif %}
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'work' %}">Our Works</a>
+                            <a class="nav-link" href="{% url 'work' %}">Послуги</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'view_cart' %}">
@@ -75,10 +75,10 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                            <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' 'user' %}"><i class="bi bi-person-vcard"></i> Register</a>
+                            <a class="nav-link" href="{% url 'register' 'user' %}"><i class="bi bi-person-vcard"></i></a>
                         </li>
                     {% endif %}
                 </ul>
