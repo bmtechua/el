@@ -581,22 +581,9 @@ def is_manager(user):
 
 
 @login_required
-@user_passes_test(is_manager)
-def manager_orders(request):
-    orders = Order.objects.all()  # Отримати всі замовлення
-    return render(request, 'work/manager_orders.html', {'orders': orders})
-
-
-@login_required
 @user_passes_test(is_administrator)
 def admin_cabinet(request):
     return render(request, 'work/admin_cabinet.html')
-
-
-@login_required
-@user_passes_test(is_manager)
-def manager_cabinet(request):
-    return render(request, 'work/manager_cabinet.html')
 
 
 def some_view(request):
@@ -612,41 +599,6 @@ def some_view(request):
     }
 
     return render(request, 'index.html', context)
-
-
-@login_required
-@user_passes_test(is_manager)
-def update_order_status(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST':
-        form = OrderStatusForm(request.POST, instance=order)
-        if form.is_valid():
-            form.save()
-            return redirect('order_confirmation', order_id=order.id)
-    else:
-        form = OrderStatusForm(instance=order)
-    return render(request, 'update_order_status.html', {'form': form, 'order': order})
-
-
-@login_required
-@user_passes_test(is_manager)
-def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'work/cart/order_detail.html', {'order': order})
-
-
-@login_required
-@user_passes_test(is_manager)
-def edit_order_status(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST':
-        form = OrderStatusForm(request.POST, instance=order)
-        if form.is_valid():
-            form.save()
-            return redirect('manager_orders')
-    else:
-        form = OrderStatusForm(instance=order)
-    return render(request, 'work/cart/edit_order_status.html', {'form': form, 'order': order})
 
 
 def our_works(request):
@@ -688,13 +640,6 @@ def admin_cabinet(request):
 
 
 @login_required
-def user_cabinet_old(request):
-    if request.user.groups.filter(name='user').exists():
-        return render(request, 'work/user_cabinet.html')
-    return redirect('login')
-
-
-@login_required
 def user_cabinet(request):
     if request.user.groups.filter(name='user').exists():
         orders = Order.objects.filter(user=request.user)
@@ -714,3 +659,33 @@ def user_cabinet(request):
                    }
         return render(request, 'work/user_cabinet.html', context)
     return redirect('login')
+
+
+def is_manager(user):
+    return user.groups.filter(name='manager').exists()
+
+
+@login_required
+@user_passes_test(is_manager)
+def manager_cabinet(request):
+    orders = Order.objects.all()
+    return render(request, 'work/manager_cabinet.html', {'orders': orders})
+
+
+@login_required
+@user_passes_test(is_manager)
+def edit_order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('manager_cabinet')
+    else:
+        form = OrderStatusForm(instance=order)
+    return render(request, 'work/update_order_status.html', {'form': form, 'order': order})
+
+
+def manager_orders(request):
+    orders = Order.objects.all()
+    return render(request, 'work/manager_cabinet.html', {'orders': orders})

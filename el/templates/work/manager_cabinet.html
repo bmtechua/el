@@ -1,8 +1,108 @@
 {% extends 'index.html' %}
-{% block title %}Кабінет Менеджера{% endblock title %}
+
+{% block title %}Управління замовленнями{% endblock title %}
+
 {% block content %}
-<h1>Кабінет Менеджера</h1>
-<p>Вітаємо, менеджере!</p>
-<a href="{% url 'view_cart' %}">Перегляд корзини</a>
-<a href="{% url 'manager_orders' %}">Управління замовленнями</a>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordersModal">
+    Управління замовленнями
+</button>
+
+<div class="modal fade" id="ordersModal" tabindex="-1" aria-labelledby="ordersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ordersModalLabel">Управління замовленнями</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID Замовлення</th>
+                            <th>Дата замовлення</th>
+                            <th>Користувач</th>
+                            <th>Загальна сума, грн</th>
+                            <th>Статус</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ order.id }}</td>
+                                <td>{{ order.created_at }}</td>
+                                <td>{{ order.user.username }}</td>
+                                <td>{{ order.total }}</td>
+                                <td>{{ order.get_status_display }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#manageOrderModal" data-order-id="{{ order.id }}" data-order-status="{{ order.status }}">
+                                        Редагувати
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="manageOrderModal" tabindex="-1" aria-labelledby="manageOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manageOrderModalLabel">Редагувати замовлення</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="manageOrderForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_id" id="orderID" value="">
+                    <div class="mb-3">
+                        <label for="orderStatus" class="form-label">Статус Замовлення</label>
+                        <select class="form-select" id="orderStatus" name="orderStatus" required>
+                            <option value="pending">Очікує</option>
+                            <option value="processed">Оброблено</option>
+                            <option value="shipped">Відправлено</option>
+                            <option value="delivered">Доставлено</option>
+                            <option value="cancelled">Скасовано</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                        <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var manageOrderModal = document.getElementById('manageOrderModal');
+
+        manageOrderModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var orderID = button.getAttribute('data-order-id');
+            var orderStatus = button.getAttribute('data-order-status');
+
+            var modalOrderIDInput = document.getElementById('orderID');
+            var modalOrderStatusSelect = document.getElementById('orderStatus');
+
+            modalOrderIDInput.value = orderID;
+            modalOrderStatusSelect.value = orderStatus;
+        });
+
+        var manageOrderForm = document.getElementById('manageOrderForm');
+        manageOrderForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            // Логіка обробки форми, відправка даних на сервер і закриття модального вікна
+        });
+    });
+</script>
 {% endblock %}
