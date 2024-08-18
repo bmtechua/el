@@ -64,6 +64,7 @@ urlpatterns = [
          views.edit_order_status, name='edit_order_status'),
     path('user_cabinet/', views.user_cabinet, name='user_cabinet'),
     path('user/orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('contacts/', views.contacts, name='contacts'),
 
     path('our-works/', views.our_works, name='our_works'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

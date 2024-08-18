@@ -689,3 +689,7 @@ def edit_order_status(request, order_id):
 def manager_orders(request):
     orders = Order.objects.all()
     return render(request, 'work/manager_cabinet.html', {'orders': orders})
+
+
+def contacts(request):
+    return render(request, 'work/contacts.html')
