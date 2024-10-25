@@ -105,20 +105,19 @@
         {% if request.user.is_authenticated %}
             <ul>
                 {% if is_admin %}
-                    <p>Hello, admin!</p>
+                    <p>Привіт адміну!</p>
                 {% endif %}
                 {% if is_manager %}
-                    <p>Hello, manager!</p>
+                    <p>Привіт менеджеру!</p>
                 {% endif %}
                 {% if is_customer %}
-                    <p>Hello, user!</p>
+                    <p>Привіт користувачу!</p>
                 {% endif %}
                 {% else %}
-                <p>Hello, new comer!</p>
+                <p>Привіт новому користувачу!</p>
                 
             </ul>
         {% endif %}
-        <p>++++</p>
     </div>
 </div>
 
